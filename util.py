@@ -64,16 +64,20 @@ def cast_ray(internal_data: dict[complex, int], p: tuple[complex, complex]) -> i
     if len(deltas) > 0:
         return min(deltas)
 
+    return None
 
 
 def read_day(day: int, test_part=0, **kwargs) -> list | dict:
     return read_lines(rf"Inputs\Day{day}" + (f"_Test{test_part}" if test_part else ""), **kwargs)
 
 
-def read_lines(filename: str, split=False, cast=None, delim=None, regex=None, read_as_map=None) -> list | dict:
+def read_lines(filename: str, split=False, cast=None, delim=None, regex=None, read_as_map=None, strip=True) -> list | dict:
     if not filename.startswith("Inputs"):
         filename = "Inputs/" + filename
-    lines = [line.strip() for line in open(filename).read().strip().split("\n")]
+    if strip:
+        lines = [line.strip() for line in open(filename).read().strip().split("\n")]
+    else:
+        lines = [line for line in open(filename).read().split("\n")]
 
     if read_as_map:
         data = defaultdict(int)
@@ -188,6 +192,26 @@ def test(data, fn: Callable, result: Any, **kwargs):
     except Exception as e:
         raise e
 
+
+def bench(data, fn: Callable, result: Any, iters=1000, **kwargs):
+    total_time = 0
+    i = 0
+    try:
+        while i < iters:
+            start_time = time.perf_counter_ns()
+
+            t = fn(data, **kwargs)
+            total_time += time.perf_counter_ns() - start_time
+            if t != result:
+                print(f"{Colors.FAIL}FAILURE")
+            i += 1
+
+
+        print(f"{Colors.OKCYAN}SUCCESS\nTotal Time: {total_time/1E6:.2f}ms\nIters {i}\nTime per Iter: {total_time/1E6/iters:.2f}ms{Colors.ENDC}")
+
+    except Exception as e:
+        raise e
+
 def sparse_map(data: list[str], keys: dict, background = ".", unique=None, direction = None) -> tuple[defaultdict[Any, complex], None | complex | list[complex | Any]]:
     result = defaultdict(complex)
     unique_position = None
@@ -213,3 +237,21 @@ def run_multiprocessing(fn: Callable, args: Iterable) -> list:
                 ),
                 total=len(args)))
     return results
+
+global_master_list = []
+def flatten_list(lst):
+    flatten_list_v2(lst)
+    return global_master_list
+
+def flatten_list_v2(lst: list | Any):
+    global global_master_list
+    if type(lst) == list:
+        if len(lst) == 1:
+            return flatten_list_v2(lst[0])
+        else:
+            return [flatten_list_v2(l) for l in lst]
+    else:
+        global_master_list.append(lst)
+    return None
+
+

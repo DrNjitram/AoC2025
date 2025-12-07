@@ -1,10 +1,6 @@
 from util import *
-print_keys = {"@": 1, "X": 2}
-
 
 def part1(data: dict[tuple[int, int], int]):
-    #print_sparse_map(data, print_keys)
-    #adj_map = defaultdict(int)
     ans1 = 0
     new_map = defaultdict(int)
     for x,y in list(data.keys()):
@@ -14,12 +10,10 @@ def part1(data: dict[tuple[int, int], int]):
                 if data[(x+dx, y+dy)]:
                     adj += 1
             if adj < 4:
-                #adj_map[(x,y)] = 2
                 ans1 += 1
             else:
                 new_map[(x,y)] = 1
 
-    #print_sparse_map(new_map, print_keys)
     ans2 = ans1
     can_change = True
     while can_change:
@@ -32,20 +26,14 @@ def part1(data: dict[tuple[int, int], int]):
                     if new_map[(x + dx, y + dy)]:
                         adj += 1
                 if adj < 4:
-                    # adj_map[(x,y)] = 2
                     ans2 += 1
                     can_change = True
                 else:
                     next_map[(x, y)] = 1
         new_map = next_map
-        #print_sparse_map(next_map, print_keys)
 
-
-    print(ans1, ans2)
     return ans1, ans2
 
-
-
-kwargs = {"read_as_map": print_keys}
+kwargs = {"read_as_map": {"@": 1, "X": 2}}
 test(read_day(4, 1, **kwargs), part1, (13, 43))
 test(read_day(4, **kwargs), part1, (1320, 8354))
