@@ -3,6 +3,8 @@ import time
 from collections import defaultdict
 from multiprocessing import Pool
 from typing import List, Callable, Any, Tuple, Iterable
+
+import numpy as np
 from tqdm import tqdm
 
 direction_dict = {
@@ -254,4 +256,20 @@ def flatten_list_v2(lst: list | Any):
         global_master_list.append(lst)
     return None
 
+
+
+# line segment a given by endpoints a1, a2
+# line segment b given by endpoints b1, b2
+# return
+def line_intersect(a1,a2, b1,b2) :
+    x1, y1 = a1
+    x2, y2 = a2
+    x3, y3 = b1
+    x4, y4 = b2
+    if ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)) == 0 or ((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4)) == 0:
+        return -1, -1
+    t = ((x1-x3)*(y3-y4)-(y1-y3)*(x3-x4))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
+    u = ((x1-x2)*(y1-y3)-(y1-y2)*(x1-x3))/((x1-x2)*(y3-y4)-(y1-y2)*(x3-x4))
+
+    return t, u
 
